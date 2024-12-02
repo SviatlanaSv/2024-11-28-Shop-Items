@@ -1,0 +1,391 @@
+{
+	"info": {
+		"_postman_id": "e524b09b-591a-4948-be1b-071b60d2a61a",
+		"name": "Shop Items",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39912236"
+	},
+	"item": [
+		{
+			"name": "Get Items",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is an array\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an('array');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"All items have required fields\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    jsonData.forEach(item => {\r",
+							"    pm.expect(item).to.have.property(\"id\").to.be.a('number');\r",
+							"    pm.expect(item).to.have.property(\"name\").to.be.a('string');\r",
+							"    pm.expect(item).to.have.property(\"description\").to.be.a('string');\r",
+							"    pm.expect(item).to.have.property(\"price\").to.be.a('string');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"First object matches expected values\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    let firstObject = jsonData[0];\r",
+							"    pm.expect(firstObject.name).to.eql(\"Soap\");\r",
+							"    pm.expect(firstObject.description).to.eql(\"White\");\r",
+							"    pm.expect(firstObject.price).to.eql(\"2.00\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/items",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Item by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/items/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"items",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Item by ID_error",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/items/100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"items",
+						"100"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create item",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Soap\", \r\n    \"description\":\"White\", \r\n    \"price\":\"1.00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/items",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create item 2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Milk\", \r\n    \"description\":\"3.2% fat\", \r\n    \"price\":\"1.50\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/items",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Item_error_Test script",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Expected rror\", function(){\r",
+							"    let jsonData = pm.response.json();\r",
+							"     pm.expect(jsonData.error).to.eql(\"Name, description, and price are required\");\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \r\n    \"description\":\"White\", \r\n    \"price\":\"1.00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/items",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update item",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"Soap\",\r\n    \"description\": \"White\",\r\n    \"price\": \"2.00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/items/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"items",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update item_error",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"Soap\",\r\n    \"description\": \"White\",\r\n    \"price\": \"2.00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/items/6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"items",
+						"6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Item",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"Soap\",\r\n    \"description\": \"White\",\r\n    \"price\": \"2.00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/items/90",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"items",
+						"90"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Item_error",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"Soap\",\r\n    \"description\": \"White\",\r\n    \"price\": \"2.00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/items/90",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"items",
+						"90"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Items_Test Script",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is an array\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an('array');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"All items have required fields\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    jsonData.forEach(item => {\r",
+							"    pm.expect(item).to.have.property(\"id\").to.be.a('number');\r",
+							"    pm.expect(item).to.have.property(\"name\").to.be.a('string');\r",
+							"    pm.expect(item).to.have.property(\"description\").to.be.a('string');\r",
+							"    pm.expect(item).to.have.property(\"price\").to.be.a('string');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"First object matches expected values\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    let firstObject = jsonData[0];\r",
+							"    pm.expect(firstObject.name).to.eql(\"Soap\");\r",
+							"    pm.expect(firstObject.description).to.eql(\"White\");\r",
+							"    pm.expect(firstObject.price).to.eql(\"2.00\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/items",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"items"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
