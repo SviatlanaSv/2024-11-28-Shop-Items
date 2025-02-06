@@ -1,81 +1,81 @@
-// Импортируем необходимые модули
+// Import necessary modules
 const express = require("express");
 const bodyParser = require("body-parser");
 
-// Инициализируем приложение Express
+// Initialize Express app
 const app = express();
 const PORT = 3000;
 
-// Middleware для парсинга JSON в теле запроса
+// Middleware for parsing JSON in request body
 app.use(bodyParser.json());
 
-// Массив для хранения товаров (вместо базы данных)
+// Array to store items (instead of using a database)
 let shopItems = [];
 let nextId = 1;
 
-// Роуты
+// Routes
 
-// Получить все товары
+// Get all items
 app.get("/items", (req, res) => {
   res.json(shopItems);
 });
 
-// Получить один товар по ID
+// Get a single item by ID
 app.get("/items/:id", (req, res) => {
-  const id = parseInt(req.params.id, 10); // Получаем ID из параметра запроса
-  const item = shopItems.find((i) => i.id === id); // Находим товар по ID
+  const id = parseInt(req.params.id, 10); // Get ID from request parameter
+  const item = shopItems.find((i) => i.id === id); // Find item by ID
   if (!item) {
-    return res.status(404).json({ error: "Item not found" }); // Если товар не найден
+    return res.status(404).json({ error: "Item not found" }); // If item not found
   }
-  res.json(item); // Возвращаем товар
+  res.json(item); // Return the item
 });
 
-// Добавить новый товар
+// Add a new item
 app.post("/items", (req, res) => {
-  const { name, description, price } = req.body; // Извлекаем данные из тела запроса
+  const { name, description, price } = req.body; // Extract data from request body
   if (!name || !description || !price) {
     return res
       .status(400)
-      .json({ error: "Name, description, and price are required" }); // Проверка на обязательные поля
+      .json({ error: "Name, description, and price are required" }); // Check for required fields
   }
 
-  const newItem = { id: nextId++, name, description, price }; // Создаем новый товар
-  shopItems.push(newItem); // Добавляем товар в массив
-  res.status(201).json(newItem); // Возвращаем новый товар с кодом 201 (создано)
+  const newItem = { id: nextId++, name, description, price }; // Create new item
+  shopItems.push(newItem); // Add the item to the array
+  res.status(201).json(newItem); // Return the new item with status 201 (created)
 });
 
-// Обновить товар по ID
+// Update an item by ID
 app.put("/items/:id", (req, res) => {
-  const id = parseInt(req.params.id, 10); // Получаем ID из параметра запроса
-  const { name, description, price } = req.body; // Извлекаем данные из тела запроса
-  const item = shopItems.find((i) => i.id === id); // Находим товар по ID
+  const id = parseInt(req.params.id, 10); // Get ID from request parameter
+  const { name, description, price } = req.body; // Extract data from request body
+  const item = shopItems.find((i) => i.id === id); // Find item by ID
 
   if (!item) {
-    return res.status(404).json({ error: "Item not found" }); // Если товар не найден
+    return res.status(404).json({ error: "Item not found" }); // If item not found
   }
 
-  // Обновляем поля товара, если они присутствуют в запросе
+  // Update item fields if they are present in the request
   if (name !== undefined) item.name = name;
   if (description !== undefined) item.description = description;
   if (price !== undefined) item.price = price;
 
-  res.json(item); // Возвращаем обновленный товар
+  res.json(item); // Return the updated item
 });
 
-// Удалить товар по ID
+// Delete an item by ID
 app.delete("/items/:id", (req, res) => {
-  const id = parseInt(req.params.id, 10); // Получаем ID из параметра запроса
-  const itemIndex = shopItems.findIndex((i) => i.id === id); // Находим индекс товара по ID
+  const id = parseInt(req.params.id, 10); // Get ID from request parameter
+  const itemIndex = shopItems.findIndex((i) => i.id === id); // Find index of item by ID
 
   if (itemIndex === -1) {
-    return res.status(404).json({ error: "Item not found" }); // Если товар не найден
+    return res.status(404).json({ error: "Item not found" }); // If item not found
   }
 
-  shopItems.splice(itemIndex, 1); // Удаляем товар из массива
-  res.status(204).send(); // Возвращаем статус 204 (успешно удалено) без содержимого
+  shopItems.splice(itemIndex, 1); // Remove the item from the array
+  res.status(204).send(); // Return status 204 (successfully deleted) with no content
 });
 
-// Запуск сервера
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
