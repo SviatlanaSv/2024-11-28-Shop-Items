@@ -57,4 +57,3 @@ This project is licensed under the **ISC License**. ✨
 ---
 
 Feel free to run the tests, experiment, and explore the API! If you need to make any modifications or enhancements, you're welcome to fork the repo and get creative! 🚀
-```
