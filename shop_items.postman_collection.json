@@ -7,457 +7,776 @@
 	},
 	"item": [
 		{
-			"name": "Get all Items",
-			"event": [
+			"name": "Get Item",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response status is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Response is an array\", function () {\r",
-							"    let jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData).to.be.an('array');\r",
-							"});\r",
-							"\r",
-							"pm.test(\"All items have required fields\", function () {\r",
-							"    const jsonData = pm.response.json();\r",
-							"    jsonData.forEach(item => {\r",
-							"        pm.expect(item).to.have.property(\"id\").to.be.a('number');\r",
-							"        pm.expect(item).to.have.property(\"name\").to.be.a('string');\r",
-							"        pm.expect(item).to.have.property(\"description\").to.be.a('string');\r",
-							"        pm.expect(item).to.have.property(\"price\").to.be.a('string');\r",
-							"    });\r",
-							"});\r",
-							"\r",
-							"pm.test(\"First object matches expected values\", function () {\r",
-							"    let jsonData = pm.response.json();  // Парсим ответ в json\r",
-							"    console.log(\"Full Response:\", jsonData);  // Логируем весь ответ\r",
-							"\r",
-							"    // Проверяем, что данные пришли и что это массив\r",
-							"    pm.expect(jsonData).to.be.an('array').that.is.not.empty;  // Проверяем, что это массив и он не пустой\r",
-							"\r",
-							"    // Если массив не пуст, проверим первый элемент\r",
-							"    let firstObject = jsonData[0];\r",
-							"    console.log(\"First object:\", firstObject);  // Логируем первый объект\r",
-							"\r",
-							"    // Проверяем значения\r",
-							"    pm.expect(firstObject).to.have.property(\"name\", \"Soap\");\r",
-							"    pm.expect(firstObject).to.have.property(\"description\", \"White\");\r",
-							"    pm.expect(firstObject).to.have.property(\"price\", \"2.00\");\r",
-							"});\r",
-							"\r",
-							"\r",
-							"\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
+					"name": "Create an item to test it for ID retrieval",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const names = [\"Soap\", \"Shampoo\", \"Toothpaste\", \"Conditioner\", \"Lotion\", \"Gel\", \"Cream\", \"Deodorant\", \"Perfume\", \"Body Wash\"];\r",
+									"\r",
+									"const descriptions = [\"White\", \"Blue\", \"Green\", \"Red\", \"Yellow\", \"Pink\", \"Purple\", \"Black\", \"Orange\", \"Brown\"];\r",
+									"\r",
+									"const prices = [\"1.99\", \"2.49\", \"3.00\", \"3.50\", \"4.00\", \"4.99\", \"5.50\", \"6.00\", \"7.25\", \"8.99\"];\r",
+									"\r",
+									"const randomName = names[Math.floor(Math.random() * names.length)];\r",
+									"const randomDescription = descriptions[Math.floor(Math.random() * descriptions.length)];\r",
+									"const randomPrice = prices[Math.floor(Math.random() * prices.length)];\r",
+									"\r",
+									"pm.collectionVariables.set('nameForGetItem', randomName);\r",
+									"pm.collectionVariables.set('descriptionForGetItem', randomDescription);\r",
+									"pm.collectionVariables.set('priceForGetItem', randomPrice);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Extract user ID from response\", function () {\r",
+									"    const jsonData = pm.response.json(); \r",
+									"    pm.expect(jsonData).to.have.property('id'); \r",
+									"\r",
+									"    const itemId = jsonData.id; \r",
+									"    pm.collectionVariables.set('itemIdForRetrieval', itemId);\r",
+									"    console.log('Item ID saved to collection variable:', itemId);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{nameForGetItem}}\", \r\n    \"description\":\"{{descriptionForGetItem}}\", \r\n    \"price\":\"{{priceForGetItem}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/items",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"items"
+							]
+						}
+					},
+					"response": []
 				},
 				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Get all Items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"All items have required fields\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    jsonData.forEach(item => {\r",
+									"        pm.expect(item).to.have.property(\"id\").to.be.a('number');\r",
+									"        pm.expect(item).to.have.property(\"name\").to.be.a('string');\r",
+									"        pm.expect(item).to.have.property(\"description\").to.be.a('string');\r",
+									"        pm.expect(item).to.have.property(\"price\").to.be.a('string');\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/items",
-					"protocol": "http",
-					"host": [
-						"localhost"
 					],
-					"port": "3000",
-					"path": [
-						"items"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Item by ID",
-			"event": [
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/items",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response should be JSON\", function () {\r",
-							"    pm.response.to.be.json;\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Response contains item id\", function () {\r",
-							"    // let jsonData = pm.response.json();\r",
-							"    pm.expect(pm.response.json()).to.have.property('id');\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/items/1",
-					"protocol": "http",
-					"host": [
-						"localhost"
+					"name": "Get Item by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains required fields with correct types\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"id\").that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property(\"name\").that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property(\"description\").that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property(\"price\").that.is.a('string');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
 					],
-					"port": "3000",
-					"path": [
-						"items",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Item by ID_error",
-			"event": [
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/items/{{itemIdForRetrieval}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"items",
+								"{{itemIdForRetrieval}}"
+							]
+						}
+					},
+					"response": []
+				},
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response status code is 404\", function () {\r",
-							"  pm.expect(pm.response.code).to.equal(404);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Error message exists and is correct\", function () {\r",
-							"    const responseData = pm.response.json();\r",
-							"    \r",
-							"    pm.expect(responseData).to.be.an('object');\r",
-							"    pm.expect(responseData.error).to.exist.and.to.be.eq(\"Item not found\");\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Response time is less than 200ms\", function () {\r",
-							"  pm.expect(pm.response.responseTime).to.be.below(200);\r",
-							"});\r",
-							"\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/items/100",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"items",
-						"100"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create item",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Soap\", \r\n    \"description\":\"White\", \r\n    \"price\":\"1.00\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Get Item by ID_error_Item Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 404\", function () {\r",
+									"  pm.expect(pm.response.code).to.equal(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message exists and is correct\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.error).to.exist.and.to.be.eq(\"Item not found\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/items",
-					"protocol": "http",
-					"host": [
-						"localhost"
 					],
-					"port": "3000",
-					"path": [
-						"items"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create item 2",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Milk\", \r\n    \"description\":\"3.2% fat\", \r\n    \"price\":\"1.50\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/items/99999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"items",
+								"99999"
+							]
 						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/items",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"items"
-					]
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Create Item_error_Test script",
-			"event": [
+			"name": "Post Item",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Expected rror\", function(){\r",
-							"    let jsonData = pm.response.json();\r",
-							"     pm.expect(jsonData.error).to.eql(\"Name, description, and price are required\");\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n   \r\n    \"description\":\"White\", \r\n    \"price\":\"1.00\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Create item",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const names = [\"Soap\", \"Shampoo\", \"Toothpaste\", \"Conditioner\", \"Lotion\", \"Gel\", \"Cream\", \"Deodorant\", \"Perfume\", \"Body Wash\"];\r",
+									"\r",
+									"const descriptions = [\"White\", \"Blue\", \"Green\", \"Red\", \"Yellow\", \"Pink\", \"Purple\", \"Black\", \"Orange\", \"Brown\"];\r",
+									"\r",
+									"const prices = [\"1.99\", \"2.49\", \"3.00\", \"3.50\", \"4.00\", \"4.99\", \"5.50\", \"6.00\", \"7.25\", \"8.99\"];\r",
+									"\r",
+									"const randomName = names[Math.floor(Math.random() * names.length)];\r",
+									"const randomDescription = descriptions[Math.floor(Math.random() * descriptions.length)];\r",
+									"const randomPrice = prices[Math.floor(Math.random() * prices.length)];\r",
+									"\r",
+									"pm.collectionVariables.set('name', randomName);\r",
+									"pm.collectionVariables.set('description', randomDescription);\r",
+									"pm.collectionVariables.set('price', randomPrice);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains the expected fields with correct data types\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"id\").that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property(\"name\").that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property(\"description\").that.is.a('string');\r",
+									"    pm.expect(jsonData).to.have.property(\"price\").that.is.a('string');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Object was created with correct values\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(jsonData.name).to.equal(pm.collectionVariables.get(\"name\"));\r",
+									"    pm.expect(jsonData.description).to.equal(pm.collectionVariables.get(\"description\"));\r",
+									"    pm.expect(jsonData.price).to.equal(pm.collectionVariables.get(\"price\"));\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is below 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/items",
-					"protocol": "http",
-					"host": [
-						"localhost"
 					],
-					"port": "3000",
-					"path": [
-						"items"
-					]
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{name}}\", \r\n    \"description\":\"{{description}}\", \r\n    \"price\":\"{{price}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/items",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Item_error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 400\", function () {\r",
+									"     pm.expect(pm.response.code).to.equal(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message exist and is correct\", function(){\r",
+									"    let jsonData = pm.response.json();\r",
+									"     pm.expect(jsonData.error).to.eql(\"Name, description, and price are required\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 200 ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \r\n    \"description\":\"White\", \r\n    \"price\":\"1.00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/items",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"items"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Update item",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"Soap\",\r\n    \"description\": \"White\",\r\n    \"price\": \"2.00\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Update Item",
+			"item": [
+				{
+					"name": "Create Item for Update",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const names = [\"Soap\", \"Shampoo\", \"Toothpaste\", \"Conditioner\", \"Lotion\", \"Gel\", \"Cream\", \"Deodorant\", \"Perfume\", \"Body Wash\"];\r",
+									"\r",
+									"const descriptions = [\"White\", \"Blue\", \"Green\", \"Red\", \"Yellow\", \"Pink\", \"Purple\", \"Black\", \"Orange\", \"Brown\"];\r",
+									"\r",
+									"const prices = [\"1.99\", \"2.49\", \"3.00\", \"3.50\", \"4.00\", \"4.99\", \"5.50\", \"6.00\", \"7.25\", \"8.99\"];\r",
+									"\r",
+									"const randomName = names[Math.floor(Math.random() * names.length)];\r",
+									"const randomDescription = descriptions[Math.floor(Math.random() * descriptions.length)];\r",
+									"const randomPrice = prices[Math.floor(Math.random() * prices.length)];\r",
+									"\r",
+									"pm.collectionVariables.set('nameForUpdate', randomName);\r",
+									"pm.collectionVariables.set('descriptionForUpdate', randomDescription);\r",
+									"pm.collectionVariables.set('priceForUpdate', randomPrice);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Extract user ID from response\", function () {\r",
+									"    const jsonData = pm.response.json(); \r",
+									"    pm.expect(jsonData).to.have.property('id'); \r",
+									"\r",
+									"    const itemId = jsonData.id; \r",
+									"    pm.collectionVariables.set('itemIdForUpdate', itemId);\r",
+									"    console.log('Item ID saved to collection variable:', itemId);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/items/1",
-					"protocol": "http",
-					"host": [
-						"localhost"
 					],
-					"port": "3000",
-					"path": [
-						"items",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update item_error",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{nameForUpdate}}\", \r\n    \"description\":\"{{descriptionForUpdate}}\", \r\n    \"price\":\"{{priceForUpdate}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/items",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"items"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "http://localhost:3000/items/6",
-					"protocol": "http",
-					"host": [
-						"localhost"
+				{
+					"name": "Update item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body has valid id, name, description, and price\", function () {\r",
+									"    pm.expect(pm.response.json()).to.have.property('id');\r",
+									"    pm.expect(pm.response.json()).to.have.property('name');\r",
+									"    pm.expect(pm.response.json()).to.have.property('description');\r",
+									"    pm.expect(pm.response.json()).to.have.property('price');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"New price is correct\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.price).to.equal(\"21.34\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
 					],
-					"port": "3000",
-					"path": [
-						"items",
-						"6"
-					]
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{nameForUpdate}}\",\r\n    \"description\": \"{{descriptionForUpdate}}\",\r\n    \"price\": \"21.34\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/items/{{itemIdForUpdate}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"items",
+								"{{itemIdForUpdate}}"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
 			"name": "Delete Item",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/items/3",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"items",
-						"3"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Item_error",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"Soap\",\r\n    \"description\": \"White\",\r\n    \"price\": \"2.00\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3000/items/90",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"items",
-						"90"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Items_Test Script",
-			"event": [
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Response status is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Response is an array\", function () {\r",
-							"    let jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData).to.be.an('array');\r",
-							"});\r",
-							"\r",
-							"pm.test(\"All items have required fields\", function () {\r",
-							"    const jsonData = pm.response.json();\r",
-							"    jsonData.forEach(item => {\r",
-							"    pm.expect(item).to.have.property(\"id\").to.be.a('number');\r",
-							"    pm.expect(item).to.have.property(\"name\").to.be.a('string');\r",
-							"    pm.expect(item).to.have.property(\"description\").to.be.a('string');\r",
-							"    pm.expect(item).to.have.property(\"price\").to.be.a('string');\r",
-							"    });\r",
-							"});\r",
-							"\r",
-							"pm.test(\"First object matches expected values\", function () {\r",
-							"    let jsonData = pm.response.json();\r",
-							"    let firstObject = jsonData[0];\r",
-							"    pm.expect(firstObject.name).to.eql(\"Soap\");\r",
-							"    pm.expect(firstObject.description).to.eql(\"White\");\r",
-							"    pm.expect(firstObject.price).to.eql(\"2.00\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/items",
-					"protocol": "http",
-					"host": [
-						"localhost"
+					"name": "Create an item to delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Extract user ID from response\", function () {\r",
+									"    const jsonData = pm.response.json(); \r",
+									"    pm.expect(jsonData).to.have.property('id'); \r",
+									"\r",
+									"    const itemId = jsonData.id; \r",
+									"    pm.collectionVariables.set('itemIdForDelete', itemId);\r",
+									"    console.log('Item ID saved to collection variable:', itemId);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const names = [\"Soap\", \"Shampoo\", \"Toothpaste\", \"Conditioner\", \"Lotion\", \"Gel\", \"Cream\", \"Deodorant\", \"Perfume\", \"Body Wash\"];\r",
+									"\r",
+									"const descriptions = [\"White\", \"Blue\", \"Green\", \"Red\", \"Yellow\", \"Pink\", \"Purple\", \"Black\", \"Orange\", \"Brown\"];\r",
+									"\r",
+									"const prices = [\"1.99\", \"2.49\", \"3.00\", \"3.50\", \"4.00\", \"4.99\", \"5.50\", \"6.00\", \"7.25\", \"8.99\"];\r",
+									"\r",
+									"const randomName = names[Math.floor(Math.random() * names.length)];\r",
+									"const randomDescription = descriptions[Math.floor(Math.random() * descriptions.length)];\r",
+									"const randomPrice = prices[Math.floor(Math.random() * prices.length)];\r",
+									"\r",
+									"pm.collectionVariables.set('nameForDelete', randomName);\r",
+									"pm.collectionVariables.set('descriptionForDelete', randomDescription);\r",
+									"pm.collectionVariables.set('priceForDelete', randomPrice);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
 					],
-					"port": "3000",
-					"path": [
-						"items"
-					]
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{nameForDelete}}\", \r\n    \"description\":\"{{descriptionForDelete}}\", \r\n    \"price\":\"{{priceForDelete}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/items",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is correct\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.eql(\"Item was deleted successfully\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/items/{{itemIdForDelete}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"items",
+								"{{itemIdForDelete}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Item_error_Item Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 404\", function () {\r",
+									"  pm.expect(pm.response.code).to.equal(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message exists and is correct\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.error).to.exist.and.to.be.eq(\"Item not found\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/items/99999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"items",
+								"99999"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "name",
+			"value": ""
+		},
+		{
+			"key": "description",
+			"value": ""
+		},
+		{
+			"key": "price",
+			"value": ""
+		},
+		{
+			"key": "nameForGetItem",
+			"value": ""
+		},
+		{
+			"key": "descriptionForGetItem",
+			"value": ""
+		},
+		{
+			"key": "priceForGetItem",
+			"value": ""
+		},
+		{
+			"key": "itemIdForUpdate",
+			"value": ""
+		},
+		{
+			"key": "nameForUpdate",
+			"value": ""
+		},
+		{
+			"key": "descriptionForUpdate",
+			"value": ""
+		},
+		{
+			"key": "priceForUpdate",
+			"value": ""
+		},
+		{
+			"key": "itemIdForRetrieval",
+			"value": ""
+		},
+		{
+			"key": "nameForDelete",
+			"value": ""
+		},
+		{
+			"key": "descriptionForDelete",
+			"value": ""
+		},
+		{
+			"key": "priceForDelete",
+			"value": ""
+		},
+		{
+			"key": "itemIdForDelete",
+			"value": ""
 		}
 	]
 }

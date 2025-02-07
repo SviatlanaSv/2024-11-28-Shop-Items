@@ -72,7 +72,8 @@ app.delete("/items/:id", (req, res) => {
   }
 
   shopItems.splice(itemIndex, 1); // Remove the item from the array
-  res.status(204).send(); // Return status 204 (successfully deleted) with no content
+  res.json({ message: "Item was deleted successfully"}); // Return the updated array
+  // res.status(204).send(); // Return status 204 (successfully deleted) with no content
 });
 
 // Start the server
